@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:grupoamarelo20212/mock.dart';
+import 'package:grupoamarelo20212/pages/persons.dart';
 
 final kHintTextStyle = TextStyle(
   color: Colors.white54,
@@ -143,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 "personLogged" : person,
               });
               break;
-            };
+            }
           }
         },
         padding: EdgeInsets.all(15.0),
@@ -259,6 +260,24 @@ class _LoginScreenState extends State<LoginScreen> {
   //   );
   // }
 
+  Widget _getPersons(){
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const PersonInformation()),
+        );
+      },
+      child: const Text(
+          'Lista de pessoas',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold
+        )
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -316,6 +335,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       //_buildSignInWithText(),
                       //_buildSocialBtnRow(),
                       //_buildSignupBtn(),
+                      _getPersons()
                     ],
                   ),
                 ),
