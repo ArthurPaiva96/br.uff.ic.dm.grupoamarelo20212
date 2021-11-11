@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:grupoamarelo20212/mock.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:grupoamarelo20212/models/person.dart';
 import 'package:grupoamarelo20212/pages/persons.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 final kHintTextStyle = TextStyle(
   color: Colors.white54,
@@ -32,9 +34,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   final loginController = TextEditingController();
   final passwordController = TextEditingController();
+  var loading = false;
 
   @override
   void dispose() {
@@ -136,16 +138,33 @@ class _LoginScreenState extends State<LoginScreen> {
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: () {
-          //TODO make it a query on firebase
-          for(final person in mockPersons){
-            if(person.login == loginController.text && person.password == passwordController.text) {
-              Navigator.pushReplacementNamed(context, "/personview", arguments : {
-                "personLogged" : person,
+        onPressed: () async {
+          setState(() {
+            this.loading = true;
+          });
+          await FirebaseFirestore.instance
+              .collection("person")
+              .where("login", isEqualTo: loginController.text)
+              .where("password", isEqualTo: passwordController.text)
+              .get()
+              .then((QuerySnapshot querySnapshot) {
+            querySnapshot.docs.forEach((element) {
+              querySnapshot.docs.forEach((doc) {
+                var person = Person(
+                    name: doc["name"],
+                    age: doc["age"],
+                    login: doc["login"],
+                    password: doc["password"]);
+                setState(() {
+                  this.loading = false;
+                });
+                Navigator.pushReplacementNamed(context, "/personview",
+                    arguments: {
+                      "personLogged": person,
+                    });
               });
-              break;
-            }
-          }
+            });
+          });
         },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
@@ -260,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
   //   );
   // }
 
-  Widget _getPersons(){
+  Widget _getPersons() {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -268,14 +287,17 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (context) => const PersonInformation()),
         );
       },
-      child: const Text(
-          'Lista de pessoas',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold
-        )
-      ),
+      child: const Text('Lista de pessoas',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
     );
+  }
+
+  Widget _fetchingUser() {
+    if (this.loading)return SpinKitRing(
+      color: Colors.white,
+      size: 50.0,
+    );
+    return SizedBox.shrink();
   }
 
   @override
@@ -335,7 +357,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       //_buildSignInWithText(),
                       //_buildSocialBtnRow(),
                       //_buildSignupBtn(),
-                      _getPersons()
+                      _getPersons(),
+                      _fetchingUser()
                     ],
                   ),
                 ),

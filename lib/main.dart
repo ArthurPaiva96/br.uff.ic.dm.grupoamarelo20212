@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grupoamarelo20212/pages/personview.dart';
-import 'package:grupoamarelo20212/pages/login.dart';
+import 'package:grupoamarelo20212/pages/loginScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 
