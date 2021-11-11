@@ -155,15 +155,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     age: doc["age"],
                     login: doc["login"],
                     password: doc["password"]);
-                setState(() {
-                  this.loading = false;
-                });
+
                 Navigator.pushReplacementNamed(context, "/personview",
                     arguments: {
                       "personLogged": person,
                     });
               });
             });
+          });
+          setState(() {
+            this.loading = false;
           });
         },
         padding: EdgeInsets.all(15.0),
