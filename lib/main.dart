@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:grupoamarelo20212/pages/menuScreen.dart';
 import 'package:grupoamarelo20212/pages/personview.dart';
 import 'package:grupoamarelo20212/pages/loginScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:grupoamarelo20212/pages/preferences.dart';
 
 
 void main(){
@@ -26,6 +28,8 @@ class _HomeState extends State<Home> {
       routes: {
         //"/" : (context) => LoginScreen(),
         "/personview": (context) => PersonView(),
+        "/menu": (context) => MenuScreen(),
+        "/preferences": (context) => PreferencesScreen(),
       },
       home: FutureBuilder(
         future: _firebaseApp,

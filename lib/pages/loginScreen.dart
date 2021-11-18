@@ -156,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     login: doc["login"],
                     password: doc["password"]);
 
-                Navigator.pushReplacementNamed(context, "/personview",
+                Navigator.pushReplacementNamed(context, "/menu",
                     arguments: {
                       "personLogged": person,
                     });
