@@ -150,16 +150,20 @@ class _LoginScreenState extends State<LoginScreen> {
               .then((QuerySnapshot querySnapshot) {
             querySnapshot.docs.forEach((element) {
               querySnapshot.docs.forEach((doc) {
+
                 var person = Person(
+                    id: doc.id,
                     name: doc["name"],
                     age: doc["age"],
                     login: doc["login"],
-                    password: doc["password"]);
+                    password: doc["password"],
+                    seeWoman: doc["seeWoman"],
+                    seeMan: doc["seeMan"],
+                    bio: doc["bio"]);
 
-                Navigator.pushReplacementNamed(context, "/menu",
-                    arguments: {
-                      "personLogged": person,
-                    });
+                Navigator.pushReplacementNamed(context, "/menu", arguments: {
+                  "personLogged": person,
+                });
               });
             });
           });
@@ -294,10 +298,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _fetchingUser() {
-    if (this.loading)return SpinKitRing(
-      color: Colors.white,
-      size: 50.0,
-    );
+    if (this.loading)
+      return SpinKitRing(
+        color: Colors.white,
+        size: 50.0,
+      );
     return SizedBox.shrink();
   }
 

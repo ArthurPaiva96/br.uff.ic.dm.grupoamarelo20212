@@ -13,10 +13,10 @@ class _PersonViewState extends State<PersonView> {
   late Person user;
 
   List<Person> persons = [
-    Person(name: "Fulana1", age: 20),
-    Person(name: "Fulana2", age: 22),
-    Person(name: "Fulana3", age: 24),
-    Person(name: "Fulana4", age: 26)
+    Person(id: "1", name: "Fulana1", age: 20),
+    Person(id: "2", name: "Fulana2", age: 22),
+    Person(id: "3", name: "Fulana3", age: 24),
+    Person(id: "4", name: "Fulana4", age: 26)
   ];
   int i = 0;
 
