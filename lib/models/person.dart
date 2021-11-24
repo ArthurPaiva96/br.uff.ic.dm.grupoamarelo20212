@@ -4,15 +4,17 @@ class Person {
   String login;
   String password;
   String name;
-  int age;
+  String birthday;
   String bio;
   bool seeWoman;
   bool seeMan;
+  bool isMan;
   List<Person> liked = [];
   List<Person> rejected = [];
 
 
-  Person({required this.id, required this.name, required this.age, this.login = "",
-    this.password = "", this.seeWoman = false, this.seeMan = false, this.bio = ""});
+  Person({required this.id, required this.name, required this.birthday,
+    required this.isMan,this.login = "", this.password = "", this.seeWoman = false,
+    this.seeMan = false, this.bio = ""});
 
 }

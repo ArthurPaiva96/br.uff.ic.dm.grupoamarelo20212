@@ -11,8 +11,31 @@ class PersonInformation extends StatefulWidget {
 class _PersonInformationState extends State<PersonInformation> {
   final Stream<QuerySnapshot> _personStream = FirebaseFirestore.instance.collection('person').snapshots();
 
+  CollectionReference<Map<String, dynamic>> collection = FirebaseFirestore.instance.collection("person");
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
+    var docRef = collection.doc();
+    for(int i=1; i <= 50; i++){
+      collection.add({
+        "bio": "Bio fulana " + i.toString(),
+        "birthday": "01/01/1996",
+        "login": "fulana"+i.toString(),
+        "name": "Fulana"+i.toString(),
+        "password": "fulana"+i.toString(),
+        "isMan": false,
+        "seeMan": false,
+        "seeWoman": false,
+      }).then((value){
+        print(value.id);
+      });
+    }
+
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Persons"),
@@ -39,7 +62,7 @@ class _PersonInformationState extends State<PersonInformation> {
                     "Name: ${data['name']} "
                         "Login: ${data['login']} "
                         "Password: ${data['password']} "
-                        "Age: ${data['age']}"
+                        "Age: ${data['birthday']}"
                 ),
               );
             }).toList(),

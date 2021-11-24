@@ -10,8 +10,6 @@ class MenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
 
     user = (ModalRoute.of(context)!.settings.arguments as Map)["personLogged"];
-    print(user.seeWoman);
-    print(user.seeMan);
 
     return Scaffold(
       backgroundColor: Color(0xFF527DAA),
@@ -32,7 +30,9 @@ class MenuScreen extends StatelessWidget {
                   minimumSize: Size(300, 36),
               ),
               onPressed: (){
-              print("Pressionou pessoas");
+                Navigator.pushNamed(context, "/personview", arguments: {
+                  "personLogged": this.user,
+                });
             },
             ),
             Container(

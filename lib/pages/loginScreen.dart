@@ -148,22 +148,20 @@ class _LoginScreenState extends State<LoginScreen> {
               .where("password", isEqualTo: passwordController.text)
               .get()
               .then((QuerySnapshot querySnapshot) {
-            querySnapshot.docs.forEach((element) {
-              querySnapshot.docs.forEach((doc) {
+            querySnapshot.docs.forEach((doc) {
+              var person = Person(
+                  id: doc.id,
+                  name: doc["name"],
+                  birthday: doc["birthday"],
+                  login: doc["login"],
+                  password: doc["password"],
+                  isMan: doc["isMan"],
+                  seeWoman: doc["seeWoman"],
+                  seeMan: doc["seeMan"],
+                  bio: doc["bio"]);
 
-                var person = Person(
-                    id: doc.id,
-                    name: doc["name"],
-                    age: doc["age"],
-                    login: doc["login"],
-                    password: doc["password"],
-                    seeWoman: doc["seeWoman"],
-                    seeMan: doc["seeMan"],
-                    bio: doc["bio"]);
-
-                Navigator.pushReplacementNamed(context, "/menu", arguments: {
-                  "personLogged": person,
-                });
+              Navigator.pushReplacementNamed(context, "/menu", arguments: {
+                "personLogged": person,
               });
             });
           });
