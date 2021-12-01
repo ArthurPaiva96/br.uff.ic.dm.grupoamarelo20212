@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:grupoamarelo20212/models/person.dart';
-import 'package:grupoamarelo20212/pages/persons.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:grupoamarelo20212/pages/register_page.dart';
 
 final kHintTextStyle = TextStyle(
   color: Colors.white54,
@@ -254,46 +254,51 @@ class _LoginScreenState extends State<LoginScreen> {
   //   );
   // }
 
-  // Widget _buildSignupBtn() {
-  //   return GestureDetector(
-  //     onTap: () => print('Sign Up Button Pressed'),
-  //     child: RichText(
-  //       text: TextSpan(
-  //         children: [
-  //           TextSpan(
-  //             text: 'Don\'t have an Account? ',
-  //             style: TextStyle(
-  //               color: Colors.white,
-  //               fontSize: 18.0,
-  //               fontWeight: FontWeight.w400,
-  //             ),
-  //           ),
-  //           TextSpan(
-  //             text: 'Sign Up',
-  //             style: TextStyle(
-  //               color: Colors.white,
-  //               fontSize: 18.0,
-  //               fontWeight: FontWeight.bold,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  Widget _getPersons() {
+  Widget _buildSignupBtn() {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () => {
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const PersonInformation()),
-        );
+          MaterialPageRoute(builder: (context) => const RegisterPage())
+        )
       },
-      child: const Text('Lista de pessoas',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      child: RichText(
+        text: const TextSpan(
+          children: [
+            TextSpan(
+              text: 'Don\'t have an Account? ',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            TextSpan(
+              text: 'Sign Up',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
+
+  // Widget _getPersons() {
+  //   return GestureDetector(
+  //     onTap: () {
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => const PersonInformation()),
+  //       );
+  //     },
+  //     child: const Text('Lista de pessoas',
+  //         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+  //   );
+  // }
 
   Widget _fetchingUser() {
     if (this.loading)
@@ -360,8 +365,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _buildLoginBtn(),
                       //_buildSignInWithText(),
                       //_buildSocialBtnRow(),
-                      //_buildSignupBtn(),
-                      _getPersons(),
+                      _buildSignupBtn(),
                       _fetchingUser()
                     ],
                   ),
