@@ -21,6 +21,11 @@ class _PersonViewState extends State<PersonView> {
   int i = 0;
 
   Future<List<Person>> getPersons(Person user) async {
+    if (!user.seeWoman && !user.seeMan) {
+      this.persons = [];
+      return [];
+    }
+
     List<String> alreadyLikedOrDisliked = [];
 
     await FirebaseFirestore.instance
@@ -44,6 +49,7 @@ class _PersonViewState extends State<PersonView> {
     });
 
     this.persons = [];
+    if(alreadyLikedOrDisliked.isEmpty) alreadyLikedOrDisliked.add("a"); //gambiarra
 
     await FirebaseFirestore.instance
         .collection("person")
@@ -84,6 +90,15 @@ class _PersonViewState extends State<PersonView> {
         future: this.getPersons(this.user),
         builder: (context, AsyncSnapshot<List<Person>> snapshot) {
           if (snapshot.hasData) {
+
+            if (this.persons.isEmpty)
+              return Scaffold(
+                  appBar: AppBar(
+                    title: Text("Não há ninguém"),
+                    centerTitle: true,
+                    backgroundColor: Colors.blue,
+                  ), body: Text("Sem ninguém para exibir"));
+
             var appBar = AppBar(
               title: Text(persons[i].name),
               centerTitle: true,
@@ -179,7 +194,7 @@ class _PersonViewState extends State<PersonView> {
             );
             ;
           } else {
-            return Center(
+            return const Center(
               child: SpinKitRing(
                 color: Colors.white,
                 size: 50.0,

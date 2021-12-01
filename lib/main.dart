@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:grupoamarelo20212/pages/menuScreen.dart';
+import 'package:grupoamarelo20212/pages/contacts_screen.dart';
+import 'package:grupoamarelo20212/pages/menu_screen.dart';
 import 'package:grupoamarelo20212/pages/personview.dart';
-import 'package:grupoamarelo20212/pages/loginScreen.dart';
+import 'package:grupoamarelo20212/pages/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:grupoamarelo20212/pages/preferences.dart';
+import 'package:grupoamarelo20212/pages/preferences_screen.dart';
 
 
 void main(){
@@ -30,6 +31,7 @@ class _HomeState extends State<Home> {
         "/personview": (context) => PersonView(),
         "/menu": (context) => MenuScreen(),
         "/preferences": (context) => PreferencesScreen(),
+        "/contacts": (context) => ContactsScreen(),
       },
       home: FutureBuilder(
         future: _firebaseApp,
