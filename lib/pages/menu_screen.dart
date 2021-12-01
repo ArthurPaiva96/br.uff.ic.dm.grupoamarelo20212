@@ -44,7 +44,10 @@ class MenuScreen extends StatelessWidget {
                   minimumSize: Size(300, 36),
                 ),
                 onPressed: (){
-                  print("Pressionou chat");
+                  Navigator.pushNamed(context, "/contacts",
+                      arguments: {
+                        "personLogged": this.user,
+                      });
                 },
               ),
             ),

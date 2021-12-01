@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:grupoamarelo20212/pages/login_screen.dart';
 import 'package:intl/intl.dart';
-import 'loginScreen.dart';
 
 final CollectionReference _persons =
     FirebaseFirestore.instance.collection('person');
@@ -24,6 +24,17 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _dateController = TextEditingController();
 
   bool _isMan = false;
+
+  @override
+  void dispose() {
+    //Clean up the controller when the Widget is disposed
+    _emailController.dispose();
+    _nameController.dispose();
+    _loginController.dispose();
+    _passwordController.dispose();
+    _dateController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +109,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           hintText: "Ex. 01/01/1999"),
                       onTap: () async {
                         DateTime? date = DateTime(1900);
-                        FocusScope.of(context).requestFocus(new FocusNode());
+                        FocusScope.of(context).requestFocus(FocusNode());
 
                         date = await showDatePicker(
                             context: context,
@@ -154,20 +165,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  @override
-  void dispose() {
-    // Clean up the controller when the Widget is disposed
-    _emailController.dispose();
-    _passwordController.dispose();
-    _loginController.dispose();
-    _passwordController.dispose();
-    _dateController.dispose();
-    super.dispose();
-  }
-
-  // Example code for registration.
   Future<void> _register() async {
-    print("Criar usuario");
 
     return _persons
         .add({
