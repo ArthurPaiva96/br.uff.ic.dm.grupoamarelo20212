@@ -11,6 +11,9 @@ class PersonView extends StatefulWidget {
 }
 
 class _PersonViewState extends State<PersonView> {
+
+  bool gotList = false;
+
   CollectionReference<Map<String, dynamic>> liked_collection =
       FirebaseFirestore.instance.collection("liked");
   CollectionReference<Map<String, dynamic>> disliked_collection =
@@ -21,6 +24,9 @@ class _PersonViewState extends State<PersonView> {
   int i = 0;
 
   Future<List<Person>> getPersons(Person user) async {
+
+    if(gotList) return [];
+
     if (!user.seeWoman && !user.seeMan) {
       this.persons = [];
       return [];
@@ -48,27 +54,31 @@ class _PersonViewState extends State<PersonView> {
       });
     });
 
+
     this.persons = [];
     if(alreadyLikedOrDisliked.isEmpty) alreadyLikedOrDisliked.add("a"); //gambiarra
 
     await FirebaseFirestore.instance
         .collection("person")
-        .where(FieldPath.documentId, whereNotIn: alreadyLikedOrDisliked)
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        var person = Person(
-            id: doc.id,
-            name: doc["name"],
-            birthday: doc["birthday"],
-            login: doc["login"],
-            password: doc["password"],
-            isMan: doc["isMan"],
-            seeWoman: doc["seeWoman"],
-            seeMan: doc["seeMan"],
-            bio: doc["bio"]);
 
-        this.persons.add(person);
+        if(!alreadyLikedOrDisliked.contains(doc.id)){
+          var person = Person(
+              id: doc.id,
+              name: doc["name"],
+              birthday: doc["birthday"],
+              login: doc["login"],
+              password: doc["password"],
+              isMan: doc["isMan"],
+              seeWoman: doc["seeWoman"],
+              seeMan: doc["seeMan"],
+              bio: doc["bio"]);
+
+          this.persons.add(person);
+        }
+
       });
     });
 
@@ -78,6 +88,7 @@ class _PersonViewState extends State<PersonView> {
             (!user.seeWoman == person.isMan) | (user.seeMan == person.isMan))
         .toList();
 
+    this.gotList = true;
     return this.persons;
   }
 
@@ -91,13 +102,14 @@ class _PersonViewState extends State<PersonView> {
         builder: (context, AsyncSnapshot<List<Person>> snapshot) {
           if (snapshot.hasData) {
 
-            if (this.persons.isEmpty)
+            if (this.persons.isEmpty) {
               return Scaffold(
                   appBar: AppBar(
                     title: Text("Não há ninguém"),
                     centerTitle: true,
                     backgroundColor: Colors.blue,
                   ), body: Text("Sem ninguém para exibir"));
+            }
 
             var appBar = AppBar(
               title: Text(persons[i].name),

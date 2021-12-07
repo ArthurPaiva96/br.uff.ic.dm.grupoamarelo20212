@@ -37,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final loginController = TextEditingController();
   final passwordController = TextEditingController();
   var loading = false;
+  bool logged = false;
 
   @override
   void dispose() {
@@ -149,20 +150,25 @@ class _LoginScreenState extends State<LoginScreen> {
               .get()
               .then((QuerySnapshot querySnapshot) {
             querySnapshot.docs.forEach((doc) {
-              var person = Person(
-                  id: doc.id,
-                  name: doc["name"],
-                  birthday: doc["birthday"],
-                  login: doc["login"],
-                  password: doc["password"],
-                  isMan: doc["isMan"],
-                  seeWoman: doc["seeWoman"],
-                  seeMan: doc["seeMan"],
-                  bio: doc["bio"]);
 
-              Navigator.pushReplacementNamed(context, "/menu", arguments: {
-                "personLogged": person,
-              });
+              if(!this.logged){
+                var person = Person(
+                    id: doc.id,
+                    name: doc["name"],
+                    birthday: doc["birthday"],
+                    login: doc["login"],
+                    password: doc["password"],
+                    isMan: doc["isMan"],
+                    seeWoman: doc["seeWoman"],
+                    seeMan: doc["seeMan"],
+                    bio: doc["bio"]);
+
+                Navigator.pushReplacementNamed(context, "/menu", arguments: {
+                  "personLogged": person,
+                });
+                this.logged = true;
+              }
+
             });
           });
           setState(() {

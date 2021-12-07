@@ -32,12 +32,11 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
     await FirebaseFirestore.instance
         .collection("liked")
-        .where("user", whereIn: likedIds)
         .where("person", isEqualTo: user.id)
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        contactsIds.add(doc["user"]);
+        if(likedIds.contains(doc["user"])) contactsIds.add(doc["user"]);
       });
     });
 
@@ -47,22 +46,23 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
     await FirebaseFirestore.instance
         .collection("person")
-        .where(FieldPath.documentId, whereIn: contactsIds)
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        var person = Person(
-            id: doc.id,
-            name: doc["name"],
-            birthday: doc["birthday"],
-            login: doc["login"],
-            password: doc["password"],
-            isMan: doc["isMan"],
-            seeWoman: doc["seeWoman"],
-            seeMan: doc["seeMan"],
-            bio: doc["bio"]);
+        if(contactsIds.contains(doc.id)) {
+          var person = Person(
+              id: doc.id,
+              name: doc["name"],
+              birthday: doc["birthday"],
+              login: doc["login"],
+              password: doc["password"],
+              isMan: doc["isMan"],
+              seeWoman: doc["seeWoman"],
+              seeMan: doc["seeMan"],
+              bio: doc["bio"]);
 
-        contacts.add(person);
+          contacts.add(person);
+        }
       });
     });
 
