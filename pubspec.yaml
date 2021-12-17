@@ -38,6 +38,7 @@ dependencies:
   cloud_firestore: ^3.1.0
   firebase_auth: ^3.2.0
   flutter_spinkit: "^5.0.0"
+  swipe_cards: ^0.1.0
 
 dev_dependencies:
   flutter_test:

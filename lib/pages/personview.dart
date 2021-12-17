@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:swipe_cards/swipe_cards.dart';
 import 'package:grupoamarelo20212/models/person.dart';
 
 class PersonView extends StatefulWidget {
@@ -12,16 +13,22 @@ class PersonView extends StatefulWidget {
 
 class _PersonViewState extends State<PersonView> {
 
-  bool gotList = false;
+  // swipe cards stuff
+  late MatchEngine _matchEngine;
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  late List<SwipeItem> _swipePersons = <SwipeItem>[];
+  bool matchEngineInitialized = false;
 
+  bool gotList = false;
   CollectionReference<Map<String, dynamic>> liked_collection =
       FirebaseFirestore.instance.collection("liked");
   CollectionReference<Map<String, dynamic>> disliked_collection =
       FirebaseFirestore.instance.collection("disliked");
-  late Person user;
 
+  late Person user;
   late List<Person> persons;
-  int i = 0;
+
+  int personIndex = 0;
 
   Future<List<Person>> getPersons(Person user) async {
 
@@ -111,38 +118,49 @@ class _PersonViewState extends State<PersonView> {
                   ), body: Text("Sem ninguém para exibir"));
             }
 
+
             var appBar = AppBar(
-              title: Text(persons[i].name),
+              title: Text("Pessoas"),
               centerTitle: true,
               backgroundColor: Colors.blue,
             );
+
+            if(!this.matchEngineInitialized) this.initMatchEngine(appBar);
+
 
             return Scaffold(
               appBar: appBar,
               body: Column(
                 children: [
-                  Container(
-                    height: (MediaQuery.of(context).size.height -
-                            appBar.preferredSize.height) /
-                        2,
-                    width: MediaQuery.of(context).size.width,
-                    color: Colors.lightBlueAccent,
-                    child: Center(
-                        child: Text(
-                      "FOTO AQUI",
-                      style: TextStyle(fontSize: 50.0),
-                    )),
-                  ),
+                  SwipeCards(
+                      matchEngine: this._matchEngine,
+                      onStackFinished: () {
+                        this.persons = [];
+                      },
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          height: (MediaQuery.of(context).size.height -
+                              appBar.preferredSize.height) /
+                              2,
+                          width: MediaQuery.of(context).size.width,
+                          color: Colors.lightBlueAccent,
+                          child: Center(
+                              child: Text( //TODO mudar para foto no firebase
+                                "FOTO AQUI",
+                                style: TextStyle(fontSize: 50.0),
+                              )),
+                        );
+                      }),
                   Row(
                     children: [
                       Text(
-                        persons[i].name,
+                        persons[personIndex].name,
                         style: TextStyle(fontSize: 30.0),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 10.0),
                         child: Text(
-                          persons[i].birthday.toString(),
+                          persons[personIndex].birthday.toString(),
                           style: TextStyle(fontSize: 20.0),
                         ),
                       )
@@ -150,7 +168,7 @@ class _PersonViewState extends State<PersonView> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0),
-                    child: Text(persons[i].bio),
+                    child: Text(persons[personIndex].bio),
                   ),
                 ],
               ),
@@ -163,17 +181,7 @@ class _PersonViewState extends State<PersonView> {
                       child: FloatingActionButton(
                         heroTag: null,
                         onPressed: () async {
-                          await disliked_collection.add({
-                            "user": this.user.id,
-                            "person": this.persons[i].id
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("Você rejeitou " + persons[i].name),
-                            duration: Duration(seconds: 1),
-                          ));
-                          setState(() {
-                            if (persons.length - 1 > i) i++;
-                          });
+                          _matchEngine.currentItem!.nope();
                         },
                         backgroundColor: Colors.red,
                         child: Icon(Icons.close),
@@ -185,17 +193,7 @@ class _PersonViewState extends State<PersonView> {
                     child: FloatingActionButton(
                       heroTag: null,
                       onPressed: () async {
-                        await liked_collection.add({
-                          "user": this.user.id,
-                          "person": this.persons[i].id
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text("Você curtiu " + persons[i].name),
-                          duration: Duration(seconds: 1),
-                        ));
-                        setState(() {
-                          if (persons.length - 1 > i) i++;
-                        });
+                        _matchEngine.currentItem!.like();
                       },
                       backgroundColor: Colors.green,
                       child: Icon(Icons.check),
@@ -214,5 +212,68 @@ class _PersonViewState extends State<PersonView> {
             );
           }
         });
+  }
+
+  void initMatchEngine(AppBar appBar) {
+    for (int i = 0; i < persons.length; i++) {
+      _swipePersons.add(SwipeItem(
+
+          content: Container(
+            height: (MediaQuery.of(context).size.height -
+                appBar.preferredSize.height) /
+                2,
+            width: MediaQuery.of(context).size.width,
+            color: Colors.lightBlueAccent,
+            child: Center(
+                child: Text(
+                  "FOTO AQUI", //TODO mudar para foto no firebase
+                  style: TextStyle(fontSize: 50.0),
+                )),
+          ),
+
+          likeAction: () async {
+
+            await liked_collection.add({
+              "user": this.user.id,
+              "person": this.persons[i].id
+            });
+
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Você curtiu " + persons[i].name),
+              duration: Duration(seconds: 1),
+            ));
+
+            setState(() {
+              if (persons.length - 1 > this.personIndex) this.personIndex++;
+            });
+
+
+          },
+
+          nopeAction: () async {
+
+            await disliked_collection.add({
+              "user": this.user.id,
+              "person": this.persons[i].id
+            });
+
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Você rejeitou " + persons[i].name),
+              duration: Duration(seconds: 1),
+            ));
+
+            setState(() {
+              if (persons.length - 1 > this.personIndex) this.personIndex++;
+            });
+
+          },
+
+          superlikeAction: () {
+            print("Não tem!");
+          }));
+    }
+
+    _matchEngine = MatchEngine(swipeItems: _swipePersons);
+    this.matchEngineInitialized = true;
   }
 }
