@@ -1,15 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:grupoamarelo20212/pages/login_screen.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:grupoamarelo20212/models/person.dart';
 import 'package:intl/intl.dart';
 
-final CollectionReference _persons =
-    FirebaseFirestore.instance.collection('person');
+final CollectionReference _persons = FirebaseFirestore.instance.collection('person');
 
 class RegisterPage extends StatefulWidget {
-  final String title = 'Registration';
+  final String title = 'Cadastro de Usuario';
+  final User? user;
 
-  const RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({Key? key, this.user}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _RegisterPageState();
@@ -17,9 +19,9 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
+  late final TextEditingController _nameController = TextEditingController(text: widget.user?.displayName ?? "");
   final TextEditingController _loginController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  late final TextEditingController _emailController = TextEditingController(text: widget.user?.email ?? "");
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
@@ -117,8 +119,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             firstDate: DateTime(1900),
                             lastDate: DateTime(2100));
 
-                        _dateController.text =
-                            DateFormat('dd/MM/yyyy').format(date!);
+                        _dateController.text = DateFormat('dd/MM/yyyy').format(date!);
                       }),
                   const SizedBox(
                     height: 16.0,
@@ -145,17 +146,18 @@ class _RegisterPageState extends State<RegisterPage> {
                           await _register();
                         }
 
+                        if(widget.user != null){
+                          await signOutGoogle();
+                        }
+
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text("Usuario cadastrado"),
                           duration: Duration(seconds: 1),
                         ));
 
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginScreen()));
+                        await signIn();
                       },
-                      child: const Text('Register'),
+                      child: const Text('Finalizar cadastro'),
                     ),
                   ),
                 ],
@@ -163,6 +165,15 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
+  }
+
+  Future<void> signOutGoogle() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      await GoogleSignIn().signOut();
+    } catch (e) {
+      print('Failed to signOut' + e.toString());
+    }
   }
 
   Future<void> _register() async {
@@ -177,6 +188,7 @@ class _RegisterPageState extends State<RegisterPage> {
           'password': _passwordController.text,
           'seeMan': true,
           'seeWoman': true,
+          'email': _emailController.text
         })
         .then((value) => print("Person $value added"))
         .catchError((error) => print("Failed to add person: $error"));
@@ -194,5 +206,31 @@ class _RegisterPageState extends State<RegisterPage> {
     //     duration: Duration(seconds: 1),
     //   ));
     // }
+  }
+
+  Future<void> signIn() async{
+    await FirebaseFirestore.instance
+        .collection("person")
+        .where("login", isEqualTo: _loginController.text)
+        .where("email", isEqualTo: _emailController.text)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+          querySnapshot.docs.forEach((doc) {
+            var person = Person(
+                id: doc.id,
+                name: doc["name"],
+                birthday: doc["birthday"],
+                login: doc["login"],
+                password: doc["password"],
+                isMan: doc["isMan"],
+                seeWoman: doc["seeWoman"],
+                seeMan: doc["seeMan"],
+                bio: doc["bio"]);
+
+            Navigator.pushReplacementNamed(context, "/menu", arguments: {
+              "personLogged": person,
+            });
+          });
+        });
   }
 }

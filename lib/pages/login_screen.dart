@@ -1,8 +1,13 @@
+import 'dart:ffi';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:grupoamarelo20212/models/person.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:grupoamarelo20212/pages/register_page.dart';
 
 final kHintTextStyle = TextStyle(
@@ -17,9 +22,9 @@ final kLabelStyle = TextStyle(
 );
 
 final kBoxDecorationStyle = BoxDecoration(
-  color: Color(0xFF6CA8F1),
+  color: const Color(0xFF6CA8F1),
   borderRadius: BorderRadius.circular(10.0),
-  boxShadow: [
+  boxShadow: const [
     BoxShadow(
       color: Colors.black12,
       blurRadius: 6.0,
@@ -29,6 +34,8 @@ final kBoxDecorationStyle = BoxDecoration(
 );
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -55,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
           'Login',
           style: kLabelStyle,
         ),
-        SizedBox(height: 10.0),
+        const SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
           decoration: kBoxDecorationStyle,
@@ -63,14 +70,14 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextField(
             controller: loginController,
             keyboardType: TextInputType.text,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
+              prefixIcon: const Icon(
                 Icons.person,
                 color: Colors.white,
               ),
@@ -135,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildLoginBtn() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
+      padding: const EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
@@ -180,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
           borderRadius: BorderRadius.circular(30.0),
         ),
         color: Colors.white,
-        child: Text(
+        child: const Text(
           'LOGIN',
           style: TextStyle(
             color: Color(0xFF527DAA),
@@ -237,28 +244,38 @@ class _LoginScreenState extends State<LoginScreen> {
   //   );
   // }
 
-  // Widget _buildSocialBtnRow() {
-  //   return Padding(
-  //     padding: EdgeInsets.symmetric(vertical: 30.0),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //       children: <Widget>[
-  //         _buildSocialBtn(
-  //               () => print('Login with Facebook'),
-  //           AssetImage(
-  //             'assets/logos/facebook.jpg',
-  //           ),
-  //         ),
-  //         _buildSocialBtn(
-  //               () => print('Login with Google'),
-  //           AssetImage(
-  //             'assets/logos/google.jpg',
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  Widget _buildSocialBtnRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 30.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          // _buildSocialBtn(
+          //       () => print('Login with Facebook'),
+          //   AssetImage(
+          //     'assets/logos/facebook.jpg',
+          //   ),
+          // ),
+          // with custom text
+          SignInButton(
+            Buttons.Google,
+            text: "Continuar com o Google",
+            onPressed: () async {
+              UserCredential credentials = await signInWithGoogle();
+              bool checked = await checkUser(credentials.user);
+              if(checked == false){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterPage(user: credentials.user))
+                );
+              }
+              // await signOutGoogle();
+            },
+          )
+        ],
+      ),
+    );
+  }
 
   Widget _buildSignupBtn() {
     return GestureDetector(
@@ -272,18 +289,18 @@ class _LoginScreenState extends State<LoginScreen> {
         text: const TextSpan(
           children: [
             TextSpan(
-              text: 'Don\'t have an Account? ',
+              text: 'Precisando de uma conta? ',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 18.0,
+                fontSize: 17.0,
                 fontWeight: FontWeight.w400,
               ),
             ),
             TextSpan(
-              text: 'Sign Up',
+              text: 'Registre-se',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 18.0,
+                fontSize: 17.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -306,6 +323,75 @@ class _LoginScreenState extends State<LoginScreen> {
   //   );
   // }
 
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  Future<void> signOutGoogle() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      await GoogleSignIn().signOut();
+    } catch (e) {
+      print('Failed to signOut' + e.toString());
+    }
+  }
+
+  Future<bool> checkUser(User? user) async {
+
+    setState(() {
+      this.loading = true;
+    });
+
+    await FirebaseFirestore.instance
+        .collection("person")
+        .where("email", isEqualTo: user!.email)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+          querySnapshot.docs.forEach((doc) async {
+            print("Achei o usuario");
+            if(!this.logged){
+              var person = Person(
+                  id: doc.id,
+                  name: doc["name"],
+                  birthday: doc["birthday"],
+                  login: doc["login"],
+                  password: doc["password"],
+                  isMan: doc["isMan"],
+                  seeWoman: doc["seeWoman"],
+                  seeMan: doc["seeMan"],
+                  bio: doc["bio"]);
+
+              await signOutGoogle();
+              Navigator.pushReplacementNamed(context, "/menu", arguments: {
+                "personLogged": person,
+              });
+              this.logged = true;
+            }
+          });
+        })
+        .catchError((onError) {
+          print("Erro ao buscar pelo email");
+        });
+    setState(() {
+      this.loading = false;
+    });
+
+    return false;
+  }
+
   Widget _fetchingUser() {
     if (this.loading)
       return SpinKitRing(
@@ -327,7 +413,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 height: double.infinity,
                 width: double.infinity,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -344,15 +430,15 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 height: double.infinity,
                 child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 40.0,
                     vertical: 120.0,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(
+                      const Text(
                         'Entrar',
                         style: TextStyle(
                           color: Colors.white,
@@ -361,16 +447,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 30.0),
+                      const SizedBox(height: 30.0),
                       _buildEmailTF(),
-                      SizedBox(
+                      const SizedBox(
                         height: 30.0,
                       ),
                       _buildPasswordTF(),
                       //_buildForgotPasswordBtn(),
                       _buildLoginBtn(),
                       //_buildSignInWithText(),
-                      //_buildSocialBtnRow(),
+                      _buildSocialBtnRow(),
                       _buildSignupBtn(),
                       _fetchingUser()
                     ],
