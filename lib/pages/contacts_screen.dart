@@ -72,7 +72,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
   Widget contactTemplate(Person person, String url) {
     return GestureDetector(
-      onTap: () => {print("Abrir chat de ${user.name} com ${person.name}")},
+      onTap: () => callChatScreen(user.id, person.id, person.name),
       child: Card(
         margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
         child: Padding(
