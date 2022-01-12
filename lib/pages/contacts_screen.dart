@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:grupoamarelo20212/models/person.dart';
+import 'package:grupoamarelo20212/pages/chat_screen.dart';
 
 class ContactsScreen extends StatefulWidget {
   const ContactsScreen({Key? key}) : super(key: key);
@@ -13,6 +14,19 @@ class ContactsScreen extends StatefulWidget {
 
 class _ContactsScreenState extends State<ContactsScreen> {
   late Person user;
+
+  void callChatScreen(String pid, String uid, String name){
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ChatScreen(
+            currentUserId: pid,
+            matchId: uid,
+            matchName: name,
+          )
+      )
+    );
+  }
 
   Future<List<Person>> contactsList(Person user) async {
     List<String> likedIds = [];
