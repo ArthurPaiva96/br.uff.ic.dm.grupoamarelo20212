@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:swipe_cards/swipe_cards.dart';
@@ -99,6 +100,39 @@ class _PersonViewState extends State<PersonView> {
     return this.persons;
   }
 
+  // profile picture load
+
+  final FirebaseStorage storage = FirebaseStorage.instance;
+
+  List<Reference> refs = [];
+  List<String> arquivos = [];
+  bool loading = true;
+
+
+  loadProfilePic(String userId) async {
+    // load dummy
+    refs = (await storage.ref('images').listAll()).items;
+    for(var ref in refs) {
+      arquivos.add(await ref.getDownloadURL());
+    }
+
+
+    // load real
+    Reference reference = storage.ref('${userId}profilepic.jpg');
+
+    try {
+      arquivos.add(await reference.getDownloadURL());
+    }
+    catch(e) {
+      print(e.toString());
+    }
+
+
+    setState(() {
+      loading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     this.user =
@@ -127,6 +161,9 @@ class _PersonViewState extends State<PersonView> {
 
             if(!this.matchEngineInitialized) this.initMatchEngine(appBar);
 
+            if (loading) {
+              loadProfilePic(persons[personIndex].id);
+            }
 
             return Scaffold(
               appBar: appBar,
@@ -144,11 +181,7 @@ class _PersonViewState extends State<PersonView> {
                               2,
                           width: MediaQuery.of(context).size.width,
                           color: Colors.lightBlueAccent,
-                          child: Center(
-                              child: Text( //TODO mudar para foto no firebase
-                                "FOTO AQUI",
-                                style: TextStyle(fontSize: 50.0),
-                              )),
+                          child: loading ? CircularProgressIndicator() : Image.network(arquivos.last)
                         );
                       }),
                   Row(
@@ -182,6 +215,8 @@ class _PersonViewState extends State<PersonView> {
                         heroTag: null,
                         onPressed: () async {
                           _matchEngine.currentItem!.nope();
+                          loading = true;
+                          loadProfilePic(persons[personIndex].id);
                         },
                         backgroundColor: Colors.red,
                         child: Icon(Icons.close),
@@ -194,6 +229,8 @@ class _PersonViewState extends State<PersonView> {
                       heroTag: null,
                       onPressed: () async {
                         _matchEngine.currentItem!.like();
+                        loading = true;
+                        loadProfilePic(persons[personIndex].id);
                       },
                       backgroundColor: Colors.green,
                       child: Icon(Icons.check),
@@ -225,10 +262,8 @@ class _PersonViewState extends State<PersonView> {
             width: MediaQuery.of(context).size.width,
             color: Colors.lightBlueAccent,
             child: Center(
-                child: Text(
-                  "FOTO AQUI", //TODO mudar para foto no firebase
-                  style: TextStyle(fontSize: 50.0),
-                )),
+                child: loading ? CircularProgressIndicator() : Image.network(arquivos.last)
+            ),
           ),
 
           likeAction: () async {

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:grupoamarelo20212/models/person.dart';
@@ -69,7 +70,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     return contacts;
   }
 
-  Widget contactTemplate(Person person) {
+  Widget contactTemplate(Person person, String url) {
     return GestureDetector(
       onTap: () => {print("Abrir chat de ${user.name} com ${person.name}")},
       child: Card(
@@ -81,6 +82,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
               CircleAvatar(
                 backgroundColor: Colors.blue,
                 radius: 30.0,
+                backgroundImage: NetworkImage(url),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 5.0),
@@ -91,6 +93,53 @@ class _ContactsScreenState extends State<ContactsScreen> {
         ),
       ),
     );
+  }
+
+  // profile picture load
+
+  final FirebaseStorage storage = FirebaseStorage.instance;
+
+  List<String> arquivos = [];
+
+  List<Person> people = [];
+  List<Widget> contactsToShow = [];
+
+  bool loading = true;
+
+  Future<String> loadSinglePic(String userId) async {
+    Reference reference = storage.ref('${userId}profilepic.jpg');
+    String? retorno;
+
+    try {
+      arquivos.add(await reference.getDownloadURL());
+
+      retorno = arquivos.last;
+      arquivos = [];
+      return retorno;
+    }
+    catch(e) {
+      print(e.toString());
+
+      reference = storage.ref('images/dummyprofilepic.jpg');
+      arquivos.add(await reference.getDownloadURL());
+
+      retorno = arquivos.last;
+      arquivos = [];
+      return retorno;
+    }
+
+  }
+
+  loadAllPics(List<Person> listOfPeople) async {
+
+    for (var p in listOfPeople) {
+      String arquivo = await loadSinglePic(p.id);
+      contactsToShow.add(contactTemplate(p, arquivo));
+    }
+
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
@@ -115,12 +164,17 @@ class _ContactsScreenState extends State<ContactsScreen> {
             }
             ;
 
+            if (loading) {
+              List<Person> people = snapshot.data!;
+
+              loadAllPics(people);
+            }
+
             return Scaffold(
               appBar: appBar,
-              body: Column(
-                children: snapshot.data!
-                    .map((person) => contactTemplate(person))
-                    .toList(),
+              body: loading
+                  ? CircularProgressIndicator() : Column(
+                children: contactsToShow,
               ),
             );
           } else {
