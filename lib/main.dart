@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grupoamarelo20212/pages/contacts_screen.dart';
+import 'package:grupoamarelo20212/pages/map_screen.dart';
 import 'package:grupoamarelo20212/pages/menu_screen.dart';
 import 'package:grupoamarelo20212/pages/personview.dart';
 import 'package:grupoamarelo20212/pages/login_screen.dart';
@@ -32,6 +33,7 @@ class _HomeState extends State<Home> {
         "/menu": (context) => MenuScreen(),
         "/preferences": (context) => PreferencesScreen(),
         "/contacts": (context) => ContactsScreen(),
+        "/map": (context) => MapScreen(),
       },
       home: FutureBuilder(
         future: _firebaseApp,

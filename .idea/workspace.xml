@@ -7,21 +7,21 @@
     <list default="true" id="ecf76073-3867-4ea8-99e2-2ab5513d29d9" name="Default Changelist" comment="Adding register page">
       <change beforePath="$PROJECT_DIR$/.flutter-plugins" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/br.uff.ic.dm.grupoamarelo20212.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/br.uff.ic.dm.grupoamarelo20212.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/pages/contacts_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/contacts_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/pages/personview.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/personview.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/preferences_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/preferences_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[E:\Arthur\.android\avd\Pixel_3_XL_API_28.avd]" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -46,6 +46,10 @@
     <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="RunManager">
@@ -54,7 +58,7 @@
       <method v="2" />
     </configuration>
   </component>
-  <component name="SpellCheckerSettings" BundledDictionaries="0" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -103,23 +107,5 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Adding register page" />
     <option name="LAST_COMMIT_MESSAGE" value="" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state width="774" height="156" key="GridCell.Tab.0.bottom" timestamp="1642016363287">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="774" height="156" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1642016363287" />
-    <state width="774" height="156" key="GridCell.Tab.0.center" timestamp="1642016363287">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="774" height="156" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1642016363287" />
-    <state width="774" height="156" key="GridCell.Tab.0.left" timestamp="1642016363286">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="774" height="156" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1642016363286" />
-    <state width="774" height="156" key="GridCell.Tab.0.right" timestamp="1642016363287">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="774" height="156" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1642016363287" />
   </component>
 </project>

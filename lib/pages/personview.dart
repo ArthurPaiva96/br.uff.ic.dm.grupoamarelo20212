@@ -268,10 +268,12 @@ class _PersonViewState extends State<PersonView> {
 
           likeAction: () async {
 
+
             await liked_collection.add({
               "user": this.user.id,
               "person": this.persons[i].id
             });
+            // TODO pushnotification if match
 
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text("Você curtiu " + persons[i].name),

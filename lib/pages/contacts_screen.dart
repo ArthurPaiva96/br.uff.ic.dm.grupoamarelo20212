@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:grupoamarelo20212/models/person.dart';
@@ -15,17 +16,15 @@ class ContactsScreen extends StatefulWidget {
 class _ContactsScreenState extends State<ContactsScreen> {
   late Person user;
 
-  void callChatScreen(String pid, String uid, String name){
+  void callChatScreen(String pid, String uid, String name) {
     Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => ChatScreen(
-            currentUserId: pid,
-            matchId: uid,
-            matchName: name,
-          )
-      )
-    );
+        context,
+        MaterialPageRoute(
+            builder: (context) => ChatScreen(
+                  currentUserId: pid,
+                  matchId: uid,
+                  matchName: name,
+                )));
   }
 
   Future<List<Person>> contactsList(Person user) async {
@@ -51,7 +50,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        if(likedIds.contains(doc["user"])) contactsIds.add(doc["user"]);
+        if (likedIds.contains(doc["user"])) contactsIds.add(doc["user"]);
       });
     });
 
@@ -64,7 +63,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        if(contactsIds.contains(doc.id)) {
+        if (contactsIds.contains(doc.id)) {
           var person = Person(
               id: doc.id,
               name: doc["name"],
@@ -86,6 +85,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
   Widget contactTemplate(Person person, String url) {
     return GestureDetector(
+      onLongPress: () => showMapAlert(person),
       onTap: () => callChatScreen(user.id, person.id, person.name),
       child: Card(
         margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
@@ -130,8 +130,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
       retorno = arquivos.last;
       arquivos = [];
       return retorno;
-    }
-    catch(e) {
+    } catch (e) {
       print(e.toString());
 
       reference = storage.ref('images/dummyprofilepic.jpg');
@@ -141,11 +140,9 @@ class _ContactsScreenState extends State<ContactsScreen> {
       arquivos = [];
       return retorno;
     }
-
   }
 
   loadAllPics(List<Person> listOfPeople) async {
-
     for (var p in listOfPeople) {
       String arquivo = await loadSinglePic(p.id);
       contactsToShow.add(contactTemplate(p, arquivo));
@@ -187,9 +184,10 @@ class _ContactsScreenState extends State<ContactsScreen> {
             return Scaffold(
               appBar: appBar,
               body: loading
-                  ? CircularProgressIndicator() : Column(
-                children: contactsToShow,
-              ),
+                  ? CircularProgressIndicator()
+                  : Column(
+                      children: contactsToShow,
+                    ),
             );
           } else {
             return const Center(
@@ -200,5 +198,30 @@ class _ContactsScreenState extends State<ContactsScreen> {
             );
           }
         });
+  }
+
+  showMapAlert(Person person) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+              title: Text("Mapa"),
+              content: Text("Deseja ver " + person.name + " no mapa?"),
+              actions: [
+                CupertinoDialogAction(
+                  child: Text("Sim"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, "/map", arguments: {
+                      "lat": 3,
+                      "long": 2,
+                    });
+                  },
+                ),
+                CupertinoDialogAction(
+                  child: Text("Não"),
+                  onPressed: () => Navigator.pop(context),
+                )
+              ],
+            ));
   }
 }
