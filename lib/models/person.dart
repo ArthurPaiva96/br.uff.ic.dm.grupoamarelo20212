@@ -9,8 +9,11 @@ class Person {
   bool seeWoman;
   bool seeMan;
   bool isMan;
+  double lat = 0;
+  double long = 0;
   List<Person> liked = [];
   List<Person> rejected = [];
+
 
 
   Person({required this.id, required this.name, required this.birthday,

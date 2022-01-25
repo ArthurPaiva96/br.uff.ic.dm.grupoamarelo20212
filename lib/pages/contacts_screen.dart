@@ -64,6 +64,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         if (contactsIds.contains(doc.id)) {
+
           var person = Person(
               id: doc.id,
               name: doc["name"],
@@ -75,8 +76,17 @@ class _ContactsScreenState extends State<ContactsScreen> {
               seeMan: doc["seeMan"],
               bio: doc["bio"]);
 
+          Map map = doc.data() as Map;
+          person.lat = map.containsKey("lat") ? doc["lat"] : 0.0;
+          person.long = map.containsKey("long") ? doc["long"] : 0.0;
+
           contacts.add(person);
+
         }
+
+        contacts.forEach((element) {
+
+        });
       });
     });
 
@@ -212,8 +222,8 @@ class _ContactsScreenState extends State<ContactsScreen> {
                   onPressed: () {
                     Navigator.pop(context);
                     Navigator.pushNamed(context, "/map", arguments: {
-                      "lat": 3,
-                      "long": 2,
+                      "lat": person.lat,
+                      "long": person.long,
                     });
                   },
                 ),
