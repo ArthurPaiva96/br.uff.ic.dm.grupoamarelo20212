@@ -3,7 +3,8 @@ import 'package:grupoamarelo20212/models/person.dart';
 import 'package:location/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
+// The menu page with options to navigate to other screen such as PersonView, Contacts and Preferences
+// It also gets and updates the user location as he or she logs in
 class MenuScreen extends StatefulWidget {
   MenuScreen({Key? key}) : super(key: key);
 
@@ -40,6 +41,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 minimumSize: Size(300, 36),
               ),
               onPressed: () {
+                // Calls the PersonView screen
                 Navigator.pushNamed(context, "/personview", arguments: {
                   "personLogged": this.user,
                 });
@@ -55,6 +57,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   minimumSize: Size(300, 36),
                 ),
                 onPressed: () {
+                  // Calls the Contacts screen
                   Navigator.pushNamed(context, "/contacts", arguments: {
                     "personLogged": this.user,
                   });
@@ -71,6 +74,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   minimumSize: Size(300, 36),
                 ),
                 onPressed: () {
+                  // Calls the Preferences screen
                   Navigator.pushNamed(context, "/preferences", arguments: {
                     "personLogged": this.user,
                   });
@@ -87,11 +91,13 @@ class _MenuScreenState extends State<MenuScreen> {
 
     var location = new Location();
 
+    // Verifies if the location is enabled on the cellphone
     var serviceEnabled = await location.serviceEnabled();
     while (!serviceEnabled) {
       serviceEnabled = await location.requestService();
     }
 
+    // Asks the user permission to use the cellphone location
     var permissionGranted = await location.hasPermission();
     while(permissionGranted == PermissionStatus.denied) {
       permissionGranted = await location.requestPermission();
@@ -99,6 +105,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
     var userLocation = await location.getLocation();
 
+    // updates the database with the user location
     var userDB = FirebaseFirestore.instance.collection('person').doc(this.user.id);
     await userDB.update({
       "lat": userLocation.latitude,

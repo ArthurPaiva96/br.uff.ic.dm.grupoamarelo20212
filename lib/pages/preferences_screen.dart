@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:grupoamarelo20212/models/person.dart';
 import 'package:grupoamarelo20212/services/image_handling.dart';
 
+
+// This page is for the user to change his/her preferences and to update some of his profile info
 class PreferencesScreen extends StatefulWidget {
   const PreferencesScreen({Key? key}) : super(key: key);
 
@@ -25,7 +27,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   List<String> arquivos = [];
   bool loading = true;
 
-
+  // Profile pic loading
   loadDummyPic() async {
     refs = (await storage.ref('images').listAll()).items;
     for(var ref in refs) {
@@ -106,6 +108,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Switch to update if the user wants or not to match with women
             SwitchListTile(
               title: Text("Ver mulheres"),
               onChanged: (bool value) {
@@ -116,6 +119,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               },
               value: this.user.seeWoman,
             ),
+            // Switch to update if the user wants or not to match with men
             SwitchListTile(
               title: Text("Ver homens"),
               onChanged: (bool value) {
@@ -138,6 +142,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             ),
             ElevatedButton(
                 onPressed: () {
+                  // Gets the information from the controler and updates the user bio
                   this.userDB.update({"bio": bioController.text});
                   this.user.bio = bioController.text;
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -159,6 +164,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               ),
             ),
             ElevatedButton(
+              // Button to call the methods to uptade the user profile pic
               onPressed: () {
                 _imageHandling.pickAndUploadImage(user);
                 loadProfilePic(user.id);
@@ -166,6 +172,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               child: Text('Trocar foto de perfil'),
             ),
             ElevatedButton(
+              // Button to call the methods to refresh the user profile pic
               onPressed: () {
                 loadProfilePic(user.id);
               },

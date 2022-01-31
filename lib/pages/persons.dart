@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+// Test database page
 class PersonInformation extends StatefulWidget {
   const PersonInformation({Key? key}) : super(key: key);
 

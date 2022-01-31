@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 
 final CollectionReference _persons = FirebaseFirestore.instance.collection('person');
 
+// This page is to a user sign in
+// It's mostly a form to update the database
 class RegisterPage extends StatefulWidget {
   final String title = 'Cadastro de Usuario';
   final User? user;

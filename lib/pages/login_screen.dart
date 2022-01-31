@@ -33,6 +33,9 @@ final kBoxDecorationStyle = BoxDecoration(
   ],
 );
 
+// This is the app front page. The login screen where the user can login normally or via Gmail
+// The user can also go to the sign in page
+// Most of the code is for front-end stuff
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -126,20 +129,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Widget _buildForgotPasswordBtn() {
-  //   return Container(
-  //     alignment: Alignment.centerRight,
-  //     child: FlatButton(
-  //       onPressed: () => print('Forgot Password Button Pressed'),
-  //       padding: EdgeInsets.only(right: 0.0),
-  //       child: Text(
-  //         'Forgot Password?',
-  //         style: kLabelStyle,
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildLoginBtn() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 25.0),
@@ -150,6 +139,8 @@ class _LoginScreenState extends State<LoginScreen> {
           setState(() {
             this.loading = true;
           });
+
+          // If the user tries to login in normally it goes to the database and checks if the user is there
           await FirebaseFirestore.instance
               .collection("person")
               .where("login", isEqualTo: loginController.text)
@@ -157,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
               .get()
               .then((QuerySnapshot querySnapshot) {
             querySnapshot.docs.forEach((doc) {
-
+              // if he/she is, the app makes the user object and calls the menu page
               if(!this.logged){
                 var person = Person(
                     id: doc.id,
@@ -200,63 +191,14 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-  //
-  // Widget _buildSignInWithText() {
-  //   return Column(
-  //     children: <Widget>[
-  //       Text(
-  //         '- OR -',
-  //         style: TextStyle(
-  //           color: Colors.white,
-  //           fontWeight: FontWeight.w400,
-  //         ),
-  //       ),
-  //       SizedBox(height: 20.0),
-  //       Text(
-  //         'Sign in with',
-  //         style: kLabelStyle,
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // Widget _buildSocialBtn(Function onTap, AssetImage logo) {
-  //   return GestureDetector(
-  //     onTap: onTap,
-  //     child: Container(
-  //       height: 60.0,
-  //       width: 60.0,
-  //       decoration: BoxDecoration(
-  //         shape: BoxShape.circle,
-  //         color: Colors.white,
-  //         boxShadow: [
-  //           BoxShadow(
-  //             color: Colors.black26,
-  //             offset: Offset(0, 2),
-  //             blurRadius: 6.0,
-  //           ),
-  //         ],
-  //         image: DecorationImage(
-  //           image: logo,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget _buildSocialBtnRow() {
+    // Sing in with Gmail button
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          // _buildSocialBtn(
-          //       () => print('Login with Facebook'),
-          //   AssetImage(
-          //     'assets/logos/facebook.jpg',
-          //   ),
-          // ),
-          // with custom text
           SignInButton(
             Buttons.Google,
             text: "Continuar com o Google",
@@ -278,6 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildSignupBtn() {
+    //Register page button
     return GestureDetector(
       onTap: () => {
         Navigator.push(
@@ -310,18 +253,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Widget _getPersons() {
-  //   return GestureDetector(
-  //     onTap: () {
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => const PersonInformation()),
-  //       );
-  //     },
-  //     child: const Text('Lista de pessoas',
-  //         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-  //   );
-  // }
 
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
@@ -350,7 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<bool> checkUser(User? user) async {
-
+    // Checks if the Gmail is in the database and if true, logs in like the ordinary login
     setState(() {
       this.loading = true;
     });

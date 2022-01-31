@@ -5,6 +5,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:grupoamarelo20212/models/person.dart';
 
+// This page shows the persons which the user can like or disliked based on the user's preferences and who he/she already liked or disliked
+// The user can also swipe left or right instead of touching the like or dislike button
 class PersonView extends StatefulWidget {
   PersonView({Key? key}) : super(key: key);
 
@@ -32,7 +34,7 @@ class _PersonViewState extends State<PersonView> {
   int personIndex = 0;
 
   Future<List<Person>> getPersons(Person user) async {
-
+    // Gets the person who the user can like or dislike
     if(gotList) return [];
 
     if (!user.seeWoman && !user.seeMan) {
@@ -41,7 +43,7 @@ class _PersonViewState extends State<PersonView> {
     }
 
     List<String> alreadyLikedOrDisliked = [];
-
+    // First it gets who the user already like or disliked
     await FirebaseFirestore.instance
         .collection("liked")
         .where("user", isEqualTo: user.id)
@@ -64,8 +66,9 @@ class _PersonViewState extends State<PersonView> {
 
 
     this.persons = [];
-    if(alreadyLikedOrDisliked.isEmpty) alreadyLikedOrDisliked.add("a"); //gambiarra
+    if(alreadyLikedOrDisliked.isEmpty) alreadyLikedOrDisliked.add("a"); // Work around
 
+    // Then it gets each person who the user haven't liked or disliked yet
     await FirebaseFirestore.instance
         .collection("person")
         .get()
@@ -73,6 +76,7 @@ class _PersonViewState extends State<PersonView> {
       querySnapshot.docs.forEach((doc) {
 
         if(!alreadyLikedOrDisliked.contains(doc.id)){
+
           var person = Person(
               id: doc.id,
               name: doc["name"],
@@ -90,6 +94,7 @@ class _PersonViewState extends State<PersonView> {
       });
     });
 
+    // And finnaly it filters using the user's preferences. If he/she wants to see men, women or both
     this.persons = this
         .persons
         .where((person) =>
@@ -169,6 +174,7 @@ class _PersonViewState extends State<PersonView> {
               appBar: appBar,
               body: Column(
                 children: [
+                  // SwipeCards configuration
                   SwipeCards(
                       matchEngine: this._matchEngine,
                       onStackFinished: () {
@@ -211,6 +217,7 @@ class _PersonViewState extends State<PersonView> {
                     alignment: Alignment.bottomLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 25.0),
+                      // Dislike button
                       child: FloatingActionButton(
                         heroTag: null,
                         onPressed: () async {
@@ -225,6 +232,7 @@ class _PersonViewState extends State<PersonView> {
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
+                    // Like button
                     child: FloatingActionButton(
                       heroTag: null,
                       onPressed: () async {
@@ -252,6 +260,7 @@ class _PersonViewState extends State<PersonView> {
   }
 
   void initMatchEngine(AppBar appBar) {
+    // Like and dislike code
     for (int i = 0; i < persons.length; i++) {
       _swipePersons.add(SwipeItem(
 
@@ -266,8 +275,8 @@ class _PersonViewState extends State<PersonView> {
             ),
           ),
 
+          // If the user liked someone updates the database
           likeAction: () async {
-
 
             await liked_collection.add({
               "user": this.user.id,
@@ -287,6 +296,8 @@ class _PersonViewState extends State<PersonView> {
 
           },
 
+
+          // If the user disliked someone updates the database
           nopeAction: () async {
 
             await disliked_collection.add({

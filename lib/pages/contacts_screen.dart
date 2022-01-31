@@ -6,6 +6,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:grupoamarelo20212/models/person.dart';
 import 'package:grupoamarelo20212/pages/chat_screen.dart';
 
+
+// This is the contacts screen. This page shows the users who liked each other
+// There is the options of chatting between them and knowing their last login location
 class ContactsScreen extends StatefulWidget {
   const ContactsScreen({Key? key}) : super(key: key);
 
@@ -16,7 +19,9 @@ class ContactsScreen extends StatefulWidget {
 class _ContactsScreenState extends State<ContactsScreen> {
   late Person user;
 
+
   void callChatScreen(String pid, String uid, String name) {
+    // Opens the chat screen
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -28,8 +33,10 @@ class _ContactsScreenState extends State<ContactsScreen> {
   }
 
   Future<List<Person>> contactsList(Person user) async {
+    //This method gets the people who matched
     List<String> likedIds = [];
 
+    //First it gets who the user liked
     await FirebaseFirestore.instance
         .collection("liked")
         .where("user", isEqualTo: user.id)
@@ -44,6 +51,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
     List<String> contactsIds = [];
 
+    //Then it gets the people who liked the user from the list of 'who the user liked'
     await FirebaseFirestore.instance
         .collection("liked")
         .where("person", isEqualTo: user.id)
@@ -58,6 +66,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
     List<Person> contacts = [];
 
+    //And finally it recovers their info from the database
     await FirebaseFirestore.instance
         .collection("person")
         .get()
@@ -84,9 +93,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
         }
 
-        contacts.forEach((element) {
-
-        });
       });
     });
 
@@ -94,6 +100,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
   }
 
   Widget contactTemplate(Person person, String url) {
+    // The gesture detector catches user input and calls an app behavior
     return GestureDetector(
       onLongPress: () => showMapAlert(person),
       onTap: () => callChatScreen(user.id, person.id, person.name),
@@ -120,7 +127,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
   }
 
   // profile picture load
-
   final FirebaseStorage storage = FirebaseStorage.instance;
 
   List<String> arquivos = [];
@@ -165,6 +171,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //Show the contact list
     user = (ModalRoute.of(context)!.settings.arguments as Map)["personLogged"];
 
     contactsList(this.user);
@@ -211,6 +218,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
   }
 
   showMapAlert(Person person) {
+    // Shows an alert asking the user if he or she wants to view a matched users last place of login
     showDialog(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(

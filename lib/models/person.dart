@@ -1,3 +1,5 @@
+// This class is used to handle the user' objects in the code
+// After getting the information from the database a Person object is instantiated
 class Person {
 
   String id;

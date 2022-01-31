@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
+
+// The map page mostly loads an map using the Flutter Map with MapBox and shows where the matched person last login was(location)
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
 
@@ -15,6 +17,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     var coordinates = (ModalRoute.of(context)!.settings.arguments as Map);
+    // Recovers the location as a coordinates object
     LatLng latLng = LatLng(coordinates["lat"], coordinates["long"]);
 
     return Scaffold(
@@ -23,12 +26,14 @@ class _MapScreenState extends State<MapScreen> {
           centerTitle: true,
           backgroundColor: Colors.blue,
         ),
+        // FlutterMap configuration
         body: FlutterMap(
           options: MapOptions(
             center: latLng,
             zoom: 13.0,
           ),
           layers: [
+            // Map Box configuration
             TileLayerOptions(
               urlTemplate: "https://api.mapbox.com/styles/v1/grupoamarelo/ckyuhls97000q14nt21g19zku/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZ3J1cG9hbWFyZWxvIiwiYSI6ImNreXVndjU1bTBkOTIybm51dHVpdXJqenYifQ.4OaVjfPcPVC0hDpnCqeRKw",
               additionalOptions: {
@@ -39,6 +44,7 @@ class _MapScreenState extends State<MapScreen> {
                 return Text("© OpenStreetMap contributors");
               },
             ),
+            // The marker which represents the person location
             MarkerLayerOptions(
               markers: [
                 Marker(

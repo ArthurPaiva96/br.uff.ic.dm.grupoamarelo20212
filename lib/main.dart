@@ -26,7 +26,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      //initialRoute: "/",
+      //Pages
       routes: {
         //"/" : (context) => LoginScreen(),
         "/personview": (context) => PersonView(),
