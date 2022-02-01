@@ -75,6 +75,8 @@ class _ContactsScreenState extends State<ContactsScreen> {
       querySnapshot.docs.forEach((doc) {
         if (contactsIds.contains(doc.id)) {
 
+          print(doc["name"] + " " + doc.id);
+
           var person = Person(
               id: doc.id,
               name: doc["name"],
@@ -84,12 +86,12 @@ class _ContactsScreenState extends State<ContactsScreen> {
               isMan: doc["isMan"],
               seeWoman: doc["seeWoman"],
               seeMan: doc["seeMan"],
-              bio: doc["bio"],
-              oneId: doc["oneId"]);
+              bio: doc["bio"]);
 
           Map map = doc.data() as Map;
           person.lat = map.containsKey("lat") ? doc["lat"] : 0.0;
           person.long = map.containsKey("long") ? doc["long"] : 0.0;
+          person.oneId = map.containsKey("oneId") ? doc["oneId"] : "";
 
           contacts.add(person);
 
