@@ -75,8 +75,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
       querySnapshot.docs.forEach((doc) {
         if (contactsIds.contains(doc.id)) {
 
-          print(doc["name"] + " " + doc.id);
-
           var person = Person(
               id: doc.id,
               name: doc["name"],
