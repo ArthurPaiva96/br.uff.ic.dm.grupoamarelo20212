@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:grupoamarelo20212/models/person.dart';
 import 'package:location/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 // The menu page with options to navigate to other screen such as PersonView, Contacts and Preferences
 // It also gets and updates the user location as he or she logs in
@@ -18,6 +19,7 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     updateUserLocation();
+    setOneId();
 
     user = (ModalRoute.of(context)!.settings.arguments as Map)["personLogged"];
 
@@ -112,5 +114,15 @@ class _MenuScreenState extends State<MenuScreen> {
       "long": userLocation.longitude,
     });
 
+  }
+
+  setOneId() async{
+
+    final status = await OneSignal.shared.getDeviceState();
+    final String? osUserID = status?.userId;
+
+    var userDB = FirebaseFirestore.instance.collection('person').doc(this.user.id);
+
+    userDB.update({"oneId": osUserID});
   }
 }

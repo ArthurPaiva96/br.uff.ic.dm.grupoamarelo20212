@@ -14,34 +14,31 @@ class ChatScreen extends StatefulWidget {
   final currentUserId;
   final matchId;
   final matchName;
+  final matchOneId;
 
-  const ChatScreen({Key? key, this.currentUserId, this.matchId, this.matchName}) : super(key: key);
+  const ChatScreen({Key? key, this.currentUserId, this.matchId, this.matchName, this.matchOneId}) : super(key: key);
 
   @override
-  _ChatScreenState createState() => _ChatScreenState(currentUserId, matchId, matchName);
+  _ChatScreenState createState() => _ChatScreenState(currentUserId, matchId, matchName, matchOneId);
 }
 
 class _ChatScreenState extends State<ChatScreen> {
   CollectionReference chats = FirebaseFirestore.instance.collection('chats');
   final String matchId;
   final String matchName;
+  final String matchOneId;
   final String currentUserId;
   var chatDocId;
   var _textController = new TextEditingController();
   var data;
 
-  _ChatScreenState(this.currentUserId, this.matchId, this.matchName);
+  _ChatScreenState(this.currentUserId, this.matchId, this.matchName, this.matchOneId);
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     checkChats();
-    OneSignal.shared.setExternalUserId(currentUserId).then((results) {
-      log(results.toString());
-    }).catchError((error) {
-      log(error.toString());
-    });
   }
 
   void checkChats() async{
@@ -222,11 +219,10 @@ class _ChatScreenState extends State<ChatScreen> {
                             )
                         ),
                         IconButton(
-                            onPressed: () {
+                            onPressed: () async{
                               sendMessage(_textController.text);
                               _textController.text = "";
-                              var userId = OneSignal.shared.setExternalUserId(currentUserId);
-                              postNotification([currentUserId], "Você recebeu uma mensagem", "Mensagem");
+                              await postNotification([matchOneId], "Você recebeu uma mensagem", "Mensagem");
                             },
                             icon: Icon(Icons.send_sharp),
                         )

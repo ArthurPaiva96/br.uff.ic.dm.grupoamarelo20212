@@ -8,6 +8,7 @@ class Person {
   String name;
   String birthday;
   String bio;
+  String oneId;
   bool seeWoman;
   bool seeMan;
   bool isMan;
@@ -20,6 +21,6 @@ class Person {
 
   Person({required this.id, required this.name, required this.birthday,
     required this.isMan,this.login = "", this.password = "", this.seeWoman = false,
-    this.seeMan = false, this.bio = ""});
+    this.seeMan = false, this.bio = "", this.oneId = ""});
 
 }

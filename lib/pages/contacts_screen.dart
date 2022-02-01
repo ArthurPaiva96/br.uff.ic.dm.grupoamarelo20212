@@ -20,7 +20,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
   late Person user;
 
 
-  void callChatScreen(String pid, String uid, String name) {
+  void callChatScreen(String pid, String uid, String name, String uoid) {
     // Opens the chat screen
     Navigator.push(
         context,
@@ -29,6 +29,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                   currentUserId: pid,
                   matchId: uid,
                   matchName: name,
+                  matchOneId: uoid,
                 )));
   }
 
@@ -83,7 +84,8 @@ class _ContactsScreenState extends State<ContactsScreen> {
               isMan: doc["isMan"],
               seeWoman: doc["seeWoman"],
               seeMan: doc["seeMan"],
-              bio: doc["bio"]);
+              bio: doc["bio"],
+              oneId: doc["oneId"]);
 
           Map map = doc.data() as Map;
           person.lat = map.containsKey("lat") ? doc["lat"] : 0.0;
@@ -103,7 +105,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     // The gesture detector catches user input and calls an app behavior
     return GestureDetector(
       onLongPress: () => showMapAlert(person),
-      onTap: () => callChatScreen(user.id, person.id, person.name),
+      onTap: () => callChatScreen(user.id, person.id, person.name, person.oneId),
       child: Card(
         margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
         child: Padding(
