@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:grupoamarelo20212/pages/contacts_screen.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_6.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class ChatScreen extends StatefulWidget {
 
@@ -34,6 +37,11 @@ class _ChatScreenState extends State<ChatScreen> {
     // TODO: implement initState
     super.initState();
     checkChats();
+    OneSignal.shared.setExternalUserId(currentUserId).then((results) {
+      log(results.toString());
+    }).catchError((error) {
+      log(error.toString());
+    });
   }
 
   void checkChats() async{
@@ -43,7 +51,9 @@ class _ChatScreenState extends State<ChatScreen> {
       .get()
       .then((QuerySnapshot querySnapshot) {
         if(querySnapshot.docs.isNotEmpty){
-          chatDocId = querySnapshot.docs.single.id;
+          setState(() {
+            chatDocId = querySnapshot.docs.single.id;
+          });
         }else{
           chats.add({
             'person':{
@@ -59,6 +69,8 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  
+
   void sendMessage(String msg) {
     if(msg == "") return;
 
@@ -67,8 +79,26 @@ class _ChatScreenState extends State<ChatScreen> {
       'uid': currentUserId,
       'message': msg
     }).then((value) => {
-      _textController.text = ''
+      _textController.text = ""
     });
+  }
+
+  Future postNotification(List<String> playersIds, String content, String headling) async{
+    return await OneSignal.shared.postNotification(OSCreateNotification(
+      playerIds: playersIds, //Lista de usuários que vão receber a notificação
+      content: content, //Conteúdo da notificação
+      heading: headling, //Título da notificação
+      buttons: [
+        OSActionButton(
+          id: "resposta", 
+          text: "Responder"
+        ),
+        OSActionButton(
+          id: "cancelar", 
+          text: "Cancelar"
+        )
+      ]
+    ));
   }
 
   bool isSender(String friend){
@@ -135,7 +165,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                   ?Color(0xFF08C187)
                                   :Color(0xffE7E7ED),
                               child: Container(
-                                color: Colors.white,
                                 constraints: BoxConstraints(
                                   maxWidth:
                                     MediaQuery.of(context).size.width * 0.7
@@ -145,7 +174,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
-                                        Text(data['msg'],
+                                        Text(data['message'],
                                           style: TextStyle(
                                             color: isSender(
                                               data['uid'].toString())
@@ -193,7 +222,12 @@ class _ChatScreenState extends State<ChatScreen> {
                             )
                         ),
                         IconButton(
-                            onPressed: () => sendMessage(_textController.text),
+                            onPressed: () {
+                              sendMessage(_textController.text);
+                              _textController.text = "";
+                              var userId = OneSignal.shared.setExternalUserId(currentUserId);
+                              postNotification([currentUserId], "Você recebeu uma mensagem", "Mensagem");
+                            },
                             icon: Icon(Icons.send_sharp),
                         )
                       ],

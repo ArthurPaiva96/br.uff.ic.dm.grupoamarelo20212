@@ -47,6 +47,7 @@ dependencies:
   flutter_map: ^0.14.0
   latlong2: ^0.8.1
   location: ^4.2.0
+  onesignal_flutter: ^3.0.0
 
 dev_dependencies:
   flutter_test:

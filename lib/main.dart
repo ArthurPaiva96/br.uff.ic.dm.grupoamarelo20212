@@ -5,6 +5,7 @@ import 'package:grupoamarelo20212/pages/menu_screen.dart';
 import 'package:grupoamarelo20212/pages/personview.dart';
 import 'package:grupoamarelo20212/pages/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:grupoamarelo20212/pages/preferences_screen.dart';
 
 
@@ -25,6 +26,15 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+
+    OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
+
+    OneSignal.shared.setAppId("04be9511-34c3-4c39-8303-cdf8d51f7a95");
+
+    OneSignal.shared.setNotificationWillShowInForegroundHandler((OSNotificationReceivedEvent event) {
+      event.complete(event.notification);                                 
+    });
+    
     return MaterialApp(
       //Pages
       routes: {
